@@ -1,0 +1,22 @@
+import tensorflow as tf
+# import the library numpy
+import numpy as np
+# the framework for defining a neural network as a set of Sequential layers is called Keras
+from tensorflow import keras
+
+# the simple neural network has one layer, containing 1 layer and the input shape to it is just one value
+model = keras.Sequential([keras.layers.Dense(units=1, input_shape=[1])])
+# loss function is to measure how well or how bad the fitting is;
+# optimizer is to make the guess base on the loss function to minimize the loss
+# sgd = stochastic gradient descent;
+model.compile(optimizer='sgd', loss='mean_squared_error')
+
+xs = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=float)
+ys = np.array([-3.0, -1.0, 1.0, 3.0, 5.0, 7.0], dtype=float)
+# model.fit is to learn the relationship between xs and ys;
+# epochs is the number of loops or iterations that the model will do to fit
+model.fit(xs, ys, epochs=500)
+
+print(model.predict([10.0]))
+'''the final result is not exactly what we expects, but very close to what we want. The reason might be the
+the training set are so small that it can not fit very accurately.'''
