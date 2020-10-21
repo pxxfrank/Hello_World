@@ -1,0 +1,38 @@
+import tensorflow.compat.v1 as tf
+import numpy as np
+
+tf.disable_v2_behavior()
+
+# create data
+# create #100 random variables. float32 data type.
+x_data = np.random.rand(100).astype(np.float32)
+# weights=0.1, biases=0.3
+y_data = x_data * 0.1 + 0.3  # x_data and y_data is training set;
+
+# Create tensorflow structure starts###
+# Weights may be tuo dimensional matrix
+# tf.Variable(参数变量）
+# [1]:one-dimension, initial value(-1,1)
+Weights = tf.Variable(tf.random_uniform([1], -1.0, 1.0))
+# initial biases is equal to zero.
+biases = tf.Variable(tf.zeros([1]))
+### create tensorflow structure end
+y = Weights * x_data + biases  # y is the prediction set;
+
+loss = tf.reduce_mean(tf.square(y - y_data))  # loss is the mean value of the square of y-y_data
+optimizer = tf.train.GradientDescentOptimizer(
+    0.5)  # Using gradient descent to minimize the loss, the learning rate is 0.5
+train = optimizer.minimize(loss) # the function of optimizer is to use the algorithm of gradient descent to minimize
+# the loss
+
+init = tf.global_variables_initializer() # initialization
+
+sess = tf.Session()
+
+sess.run(init)  # Very important
+# train 201 times
+for step in range(201):
+    sess.run(train)
+    # print out the weights and biases every 20 times
+    if step % 20 == 0:
+        print(step, sess.run(Weights), sess.run(biases))
