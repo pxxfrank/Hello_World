@@ -1,0 +1,26 @@
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+
+state = tf.Variable(0, name="counter")
+
+# Define constant one
+one = tf.constant(1)
+
+# Define the adding procedure
+new_value = tf.add(state, one)
+
+# Assign new_value to the state
+update = tf.assign(state, new_value)
+
+# Initialize the Variable; without this step, the variables will not exist.
+init = tf.global_variables_initializer()
+
+# Using Session
+# sess.run() to activate the step of initializing the variables
+with tf.Session() as sess:
+    sess.run(init)
+    for _ in range(3):
+        # with sess.run(update), the step will begin.
+        sess.run(update)
+        # sess.run(state) the state will be assigned.
+        print(sess.run(state))
