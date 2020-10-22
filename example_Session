@@ -1,0 +1,25 @@
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+
+
+# create two matrixes
+
+matrix1 = tf.constant([[3,3]]) # create 1*2 matrix1, constant value
+matrix2 = tf.constant([[2],    # create 2*1 matrix2, constant value
+                       [2]])
+product = tf.matmul(matrix1, matrix2) # tf.matmul is the product of matrix in tensorflow
+
+# IN tensorflow, the calculation of product will not be carried out directly.
+# it needs the "Session“ order to activate it
+
+# method 1
+# sess = tf.Session()
+# result = sess.run(product)
+# print(result)
+# sess.close()
+
+# method 2
+# Using this order, we do not need to worry about closing the session. It will be closed after being run.
+with tf.Session() as sess:
+        result2 = sess.run(product)
+        print(result2)
