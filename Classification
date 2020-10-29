@@ -1,0 +1,83 @@
+# View more python learning tutorial on my Youtube and Youku channel!!!
+
+# Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg
+# Youku video tutorial: http://i.youku.com/pythontutorial
+
+"""
+Please note, this code is only for python 3+. If you are using python 2+, please modify the code accordingly.
+"""
+from __future__ import print_function
+#import tensorflow as tf
+from tensorflow.examples.tutorials.mnist import input_data # import MNIST dataset
+mnist = input_data.read_data_sets('MNIST_data', one_hot=(True)) # one_hot represents the way the number presents.
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
+# import tensorflow_datasets
+# mnist = tensorflow_datasets.load('mnist')
+
+
+def add_layer(inputs, in_size, out_size, activation_function=None,): # Define the add_layer function which is
+    # convenient for us to define the new layer.
+    # add one more layer and return the output of this layer
+    Weights = tf.Variable(tf.random_normal([in_size, out_size]))
+    # define the weights as variables. the weights follows the normal random distribution.
+    biases = tf.Variable(tf.zeros([1, out_size]) + 0.1,)
+    # define the biases as variables, the biases is set as 1*n vector, all the variables are set to 0.1.
+    Wx_plus_b = tf.matmul(inputs, Weights) + biases # y=Wx+b
+    if activation_function is None:
+        outputs = Wx_plus_b
+    else:
+        outputs = activation_function(Wx_plus_b,)
+    return outputs
+
+def compute_accuracy(v_xs, v_ys):
+    # compute the computational accuracy.
+    global prediction
+    y_pre = sess.run(prediction, feed_dict={xs: v_xs}) # sess.run to activate the computation of prediction.
+    correct_prediction = tf.equal(tf.argmax(y_pre,1), tf.argmax(v_ys,1))
+    # tf.argmax returns the index of the vector.
+    # tf.equal compares the respective value on the matrix or vector.
+    # in this case, tf.equal compares if the predicted value and real value is equal.
+    # if equal, return True, otherwise, return False.
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    # tf.cast: transform the data type of the input into the desired value.
+    # tf.reduce_mean: compute the mean of elements along the one dimension of the tensor.
+    result = sess.run(accuracy, feed_dict={xs: v_xs, ys: v_ys})
+    return result
+
+# define placeholder for inputs to network
+xs = tf.placeholder(tf.float32, [None, 784]) # 28x28
+ys = tf.placeholder(tf.float32, [None, 10]) # ys is the label.
+
+# This neural network only have input layer and output layer without hidden layer.
+# input : 784 pixels
+# output: 10 features
+
+# add output layer
+prediction = add_layer(xs, 784, 10,  activation_function=tf.nn.softmax)
+# prediction is a output layer which have 784 inputs(pixels) and 10 outputs using softmax to activate it.
+# the error between prediction and real data
+cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys * tf.log(prediction),
+                                              reduction_indices=[1]))  # loss
+# cross_entropy 交叉熵.
+# cross_entropy is used to measure the real value and the predicted value. If they are similar, the
+# cross_entropy is zero.
+train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+# Use gradient descent optimizer to train the neural network.
+sess = tf.Session()
+# important step
+# tf.initialize_all_variables() no long valid from
+# 2017-03-02 if using tensorflow >= 0.12
+if int((tf.__version__).split('.')[1]) < 12 and int((tf.__version__).split('.')[0]) < 1:
+    init = tf.initialize_all_variables()
+else:
+    init = tf.global_variables_initializer()
+sess.run(init)
+
+for i in range(1000):
+    batch_xs, batch_ys = mnist.train.next_batch(100)
+    # for training, every time we only pick 100 photos to train to avoid the case of training for long time.
+    sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys})
+    if i % 50 == 0:
+        print(compute_accuracy(
+            mnist.test.images, mnist.test.labels))
